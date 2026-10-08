@@ -1,3 +1,7 @@
+import { Link } from 'react-router-dom';
+
+import { AppRoute } from '../../const';
+
 interface PlaceCardProps {
   image: string;
   price: number;
@@ -31,9 +35,9 @@ export const PlaceCard = ({
         </div>
       )}
       <div className="cities__image-wrapper place-card__image-wrapper">
-        <a href="#">
+        <Link to={AppRoute.Offer.replace(':id', 'apartment-01')}>
           <img className="place-card__image" src={image} width="260" height="200" alt="Place image" />
-        </a>
+        </Link>
       </div>
       <div className="place-card__info">
         <div className="place-card__price-wrapper">
@@ -63,9 +67,9 @@ export const PlaceCard = ({
           </div>
         </div>
         <h2 className="place-card__name">
-          <a href="#">
+          <Link to={AppRoute.Offer.replace(':id', 'apartment-01')}>
             {title}
-          </a>
+          </Link>
         </h2>
         <p className="place-card__type">
           {type}
