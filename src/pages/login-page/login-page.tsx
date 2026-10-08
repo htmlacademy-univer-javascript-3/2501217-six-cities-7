@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
-import { AppRoute } from '../../const';
-import { Header } from '../header/header';
+import { Header } from '@/components/header/header';
+import { AppRoute } from '@/const';
 export const LoginPage = () => (
   <div className="page page--gray page--login">
     <Header isAuthorized={false} />
