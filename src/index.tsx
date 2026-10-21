@@ -6,6 +6,8 @@ import { detailedOffers } from '@/mocks/detailed-offers';
 import { favorites } from '@/mocks/favorites';
 import { offers } from '@/mocks/offers';
 import { App } from './components/app/app';
+import './components/map/map.css';
+import 'leaflet/dist/leaflet.css';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

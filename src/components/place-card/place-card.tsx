@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { AppRoute } from '@/const';
+import { AppRoute, RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
 import type { Offer } from '@/types/offer';
 
 interface PlaceCardProps {
@@ -51,7 +51,7 @@ export const PlaceCard = ({ offer, className = '', onMouseEnter }: PlaceCardProp
         </div>
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
-            <span style={{ width: `${(rating / 5) * 100}%` }} />
+            <span style={{ width: `${(rating / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%` }} />
             <span className="visually-hidden">
               Rating
             </span>

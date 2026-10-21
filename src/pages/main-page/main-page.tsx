@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 
 import { OfferList } from '@/components/offer-list/offer-list';
 import { Header } from '@/components/header/header';
-import { AppRoute } from '@/const';
+import { AMSTERDAM_CITY_LOCATION, AppRoute } from '@/const';
+import { Map } from '@/components/map/map';
 import type { Offer } from '@/types/offer';
 
 interface MainPageProps {
@@ -21,7 +22,7 @@ export const MainPage = ({ offers }: MainPageProps) => (
           <ul className="locations__list tabs__list">
             {['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'].map((city) => (
               <li className="locations__item" key={city}>
-                <Link className={`locations__item-link tabs__item${city === 'Paris' ? ' tabs__item--active' : ''}`} to={AppRoute.Main}>
+                <Link className={`locations__item-link tabs__item${city === 'Amsterdam' ? ' tabs__item--active' : ''}`} to={AppRoute.Main}>
                   <span>
                     {city}
                   </span>
@@ -38,7 +39,7 @@ export const MainPage = ({ offers }: MainPageProps) => (
               Places
             </h2>
             <b className="places__found">
-              {offers.length} places to stay in Paris
+              {offers.length} places to stay in Amsterdam
             </b>
             <form className="places__sorting" action="#" method="get">
               <span className="places__sorting-caption">
@@ -58,7 +59,7 @@ export const MainPage = ({ offers }: MainPageProps) => (
             <OfferList offers={offers} className="cities__places-list places__list tabs__content" />
           </section>
           <div className="cities__right-section">
-            <section className="cities__map map" />
+            <Map offers={offers} city={offers[0]?.city ?? { name: 'Amsterdam', location: AMSTERDAM_CITY_LOCATION }} />
           </div>
         </div>
       </div>
