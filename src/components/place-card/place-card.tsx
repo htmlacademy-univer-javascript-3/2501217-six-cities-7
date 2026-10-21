@@ -6,15 +6,18 @@ import type { Offer } from '@/types/offer';
 interface PlaceCardProps {
   offer: Offer;
   className?: string;
+  imageWrapperClassName?: string;
   onMouseEnter?: (offerId: string) => void;
 }
 
-export const PlaceCard = ({ offer, className = '', onMouseEnter }: PlaceCardProps) => {
+export const PlaceCard = ({ offer, className = '', imageWrapperClassName, onMouseEnter }: PlaceCardProps) => {
   const { id, previewImage, price, title, type, isPremium, isFavorite, rating } = offer;
   const cardClassName = `${className}place-card`.trim();
   const bookmarkClassName = isFavorite
     ? 'place-card__bookmark-button place-card__bookmark-button--active button'
     : 'place-card__bookmark-button button';
+  const resolvedImageWrapperClassName = imageWrapperClassName
+    ?? (className.includes('favorites__card') ? 'favorites__image-wrapper' : 'cities__image-wrapper');
 
   return (
     <article className={cardClassName} onMouseEnter={() => onMouseEnter?.(id)}>
@@ -25,7 +28,7 @@ export const PlaceCard = ({ offer, className = '', onMouseEnter }: PlaceCardProp
           </span>
         </div>
       )}
-      <div className={`${className.includes('favorites__card') ? 'favorites__image-wrapper' : 'cities__image-wrapper'} place-card__image-wrapper`}>
+      <div className={`${resolvedImageWrapperClassName} place-card__image-wrapper`}>
         <Link to={AppRoute.Offer.replace(':id', id)}>
           <img className="place-card__image" src={previewImage} width="260" height="200" alt={title} />
         </Link>

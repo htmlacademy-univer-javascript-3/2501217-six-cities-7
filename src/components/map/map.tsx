@@ -7,6 +7,7 @@ import type { Offer } from '@/types/offer';
 interface MapProps {
   offers: Offer[];
   city: Offer['city'];
+  className?: string;
 }
 
 const defaultIcon = L.icon({
@@ -15,7 +16,7 @@ const defaultIcon = L.icon({
   iconAnchor: [13, 39],
 });
 
-export const Map = ({ offers, city }: MapProps) => {
+export const Map = ({ offers, city, className = 'cities__map map' }: MapProps) => {
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
@@ -61,5 +62,5 @@ export const Map = ({ offers, city }: MapProps) => {
     });
   }, [offers]);
 
-  return <section className="cities__map map" ref={mapContainerRef} aria-label="Map of rental offers" />;
+  return <section className={className} ref={mapContainerRef} aria-label="Map of rental offers" />;
 };

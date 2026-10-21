@@ -2,16 +2,20 @@ import { useParams } from 'react-router-dom';
 
 import { RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
 import { Header } from '@/components/header/header';
+import { Map } from '@/components/map/map';
+import { NearbyOffersList } from '@/components/nearby-offers-list/nearby-offers-list';
 import { ReviewForm } from '@/components/review-form/review-form';
+import { ReviewList } from '@/components/review-list/review-list';
 import { NotFoundPage } from '@/pages/not-found-page/not-found-page';
-import type { DetailedOffer, Review } from '@/types/offer';
+import type { DetailedOffer, Offer, Review } from '@/types/offer';
 
 interface OfferPageProps {
   offers: DetailedOffer[];
   comments: Review[];
+  nearbyOffers: Offer[];
 }
 
-export const OfferPage = ({ offers, comments }: OfferPageProps) => {
+export const OfferPage = ({ offers, comments, nearbyOffers }: OfferPageProps) => {
   const { id } = useParams<{ id: string }>();
   const offer = offers.find((item) => item.id === id);
 
@@ -125,45 +129,16 @@ export const OfferPage = ({ offers, comments }: OfferPageProps) => {
                 </div>
               </div>
               <section className="offer__reviews reviews">
-                <h2 className="reviews__title">
-                  Reviews &middot; <span className="reviews__amount">{offerComments.length}</span>
-                </h2>
-                <ul className="reviews__list">
-                  {offerComments.map((comment) => (
-                    <li className="reviews__item" key={comment.id}>
-                      <div className="reviews__user user">
-                        <div className="reviews__avatar-wrapper user__avatar-wrapper">
-                          <img className="reviews__avatar user__avatar" src={comment.user.avatarUrl} width="54" height="54" alt={comment.user.name} />
-                        </div>
-                        <span className="reviews__user-name">
-                          {comment.user.name}
-                        </span>
-                      </div>
-                      <div className="reviews__info">
-                        <div className="reviews__rating rating">
-                          <div className="reviews__stars rating__stars">
-                            <span style={{ width: `${(comment.rating / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%` }} />
-                            <span className="visually-hidden">
-                              Rating
-                            </span>
-                          </div>
-                        </div>
-                        <p className="reviews__text">
-                          {comment.comment}
-                        </p>
-                        <time className="reviews__time" dateTime={comment.date}>
-                          {new Date(comment.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                        </time>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                <ReviewList reviews={offerComments} />
                 <ReviewForm />
               </section>
             </div>
           </div>
-          <section className="offer__map map" />
+          <Map offers={nearbyOffers} city={offer.city} className="offer__map map" />
         </section>
+        <div className="container">
+          <NearbyOffersList offers={nearbyOffers} />
+        </div>
       </main>
     </div>
   );
