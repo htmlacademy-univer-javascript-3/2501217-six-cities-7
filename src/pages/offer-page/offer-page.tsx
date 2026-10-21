@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 
+import { RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
 import { Header } from '@/components/header/header';
 import { ReviewForm } from '@/components/review-form/review-form';
 import { NotFoundPage } from '@/pages/not-found-page/not-found-page';
@@ -19,7 +20,7 @@ export const OfferPage = ({ offers, comments }: OfferPageProps) => {
   }
 
   const offerComments = comments.filter((comment) => comment.offerId === offer.id);
-  const ratingWidth = `${(offer.rating / 5) * 100}%`;
+  const ratingWidth = `${(offer.rating / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%`;
   const galleryImages = [...new Set(offer.images)].concat(['/img/apartment-01.jpg', '/img/apartment-02.jpg', '/img/studio-01.jpg']).slice(0, 6);
 
   return (
@@ -141,7 +142,7 @@ export const OfferPage = ({ offers, comments }: OfferPageProps) => {
                       <div className="reviews__info">
                         <div className="reviews__rating rating">
                           <div className="reviews__stars rating__stars">
-                            <span style={{ width: `${(comment.rating / 5) * 100}%` }} />
+                            <span style={{ width: `${(comment.rating / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%` }} />
                             <span className="visually-hidden">
                               Rating
                             </span>
