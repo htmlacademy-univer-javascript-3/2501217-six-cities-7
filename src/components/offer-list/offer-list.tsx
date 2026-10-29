@@ -7,15 +7,22 @@ interface OfferListProps {
   offers: Offer[];
   className?: string;
   cardClassName?: string;
+  imageWrapperClassName?: string;
 }
 
-export const OfferList = ({ offers, className = 'places__list', cardClassName = 'cities__card ' }: OfferListProps) => {
+export const OfferList = ({ offers, className = 'places__list', cardClassName = 'cities__card ', imageWrapperClassName }: OfferListProps) => {
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
   return (
     <div className={className} data-active-offer={activeOfferId ?? undefined}>
       {offers.map((offer) => (
-        <PlaceCard key={offer.id} offer={offer} className={cardClassName} onMouseEnter={setActiveOfferId} />
+        <PlaceCard
+          key={offer.id}
+          offer={offer}
+          className={cardClassName}
+          imageWrapperClassName={imageWrapperClassName}
+          onMouseEnter={setActiveOfferId}
+        />
       ))}
     </div>
   );

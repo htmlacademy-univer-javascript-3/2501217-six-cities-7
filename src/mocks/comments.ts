@@ -15,7 +15,7 @@ export const comments: Review[] = [
   },
   {
     id: 'review-02',
-    offerId: 'fd758d72-092f-4303-86c3-ab7eacf87320',
+    offerId: '600372b3-fd22-477b-aa99-d0be39706ad7',
     date: '2025-02-02T14:13:56.000Z',
     user: {
       name: 'Angelina',

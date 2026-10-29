@@ -14,9 +14,10 @@ interface AppProps {
   favorites: Offer[];
   detailedOffers: DetailedOffer[];
   comments: Review[];
+  nearbyOffers: Offer[];
 }
 
-export const App = ({ offers, favorites, detailedOffers, comments }: AppProps) => (
+export const App = ({ offers, favorites, detailedOffers, comments, nearbyOffers }: AppProps) => (
   <BrowserRouter>
     <Routes>
       <Route path={AppRoute.Main} element={<MainPage offers={offers} />} />
@@ -29,7 +30,7 @@ export const App = ({ offers, favorites, detailedOffers, comments }: AppProps) =
           </PrivateRoute>
         )}
       />
-      <Route path={AppRoute.Offer} element={<OfferPage offers={detailedOffers} comments={comments} />} />
+      <Route path={AppRoute.Offer} element={<OfferPage offers={detailedOffers} comments={comments} nearbyOffers={nearbyOffers} />} />
       <Route path={AppRoute.NotFound} element={<NotFoundPage />} />
     </Routes>
   </BrowserRouter>
