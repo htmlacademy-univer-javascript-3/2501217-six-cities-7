@@ -8,16 +8,16 @@ export const detailedOffers: DetailedOffer[] = [
     price: 193,
     previewImage: 'https://14.design.htmlacademy.pro/static/hotel/2.jpg',
     city: {
-      name: 'Amsterdam',
+      name: 'Paris',
       location: {
-        latitude: 52.37403,
-        longitude: 4.88969,
+        latitude: 48.85661,
+        longitude: 2.351499,
         zoom: 12
       }
     },
     location: {
-      latitude: 52.3909553943508,
-      longitude: 4.85309666406198,
+      latitude: 48.8735353943508,
+      longitude: 2.31490566406198,
       zoom: 16
     },
     isFavorite: false,
@@ -50,16 +50,16 @@ export const detailedOffers: DetailedOffer[] = [
     price: 484,
     previewImage: 'https://14.design.htmlacademy.pro/static/hotel/1.jpg',
     city: {
-      name: 'Amsterdam',
+      name: 'Paris',
       location: {
-        latitude: 52.37403,
-        longitude: 4.88969,
+        latitude: 48.85661,
+        longitude: 2.351499,
         zoom: 12
       }
     },
     location: {
-      latitude: 52.3609553943508,
-      longitude: 4.85309666406198,
+      latitude: 48.8435353943508,
+      longitude: 2.31490566406198,
       zoom: 16
     },
     isFavorite: true,
@@ -95,16 +95,16 @@ export const detailedOffers: DetailedOffer[] = [
     price: 767,
     previewImage: 'https://14.design.htmlacademy.pro/static/hotel/9.jpg',
     city: {
-      name: 'Amsterdam',
+      name: 'Paris',
       location: {
-        latitude: 52.37403,
-        longitude: 4.88969,
+        latitude: 48.85661,
+        longitude: 2.351499,
         zoom: 12
       }
     },
     location: {
-      latitude: 52.3909553943508,
-      longitude: 4.929309666406198,
+      latitude: 48.8735353943508,
+      longitude: 2.391118666406198,
       zoom: 16
     },
     isFavorite: false,
@@ -313,8 +313,8 @@ export const detailedOffers: DetailedOffer[] = [
       }
     },
     location: {
-      latitude: 52.3809553943508,
-      longitude: 4.939309666406198,
+      latitude: 52.365,
+      longitude: 4.905,
       zoom: 16
     },
     isFavorite: false,
@@ -355,8 +355,8 @@ export const detailedOffers: DetailedOffer[] = [
       }
     },
     location: {
-      latitude: 52.3909553943508,
-      longitude: 4.85309666406198,
+      latitude: 52.38,
+      longitude: 4.885,
       zoom: 16
     },
     isFavorite: true,
@@ -397,8 +397,8 @@ export const detailedOffers: DetailedOffer[] = [
       }
     },
     location: {
-      latitude: 52.3609553943508,
-      longitude: 4.85309666406198,
+      latitude: 52.353,
+      longitude: 4.925,
       zoom: 16
     },
     isFavorite: false,
@@ -423,5 +423,47 @@ export const detailedOffers: DetailedOffer[] = [
       'https://14.design.htmlacademy.pro/static/hotel/6.jpg'
     ],
     maxAdults: 3
+  },
+  {
+    id: 'ec420a39-1228-47ea-8c23-a998fcb71961',
+    title: 'Paris Riverside Studio',
+    type: 'hotel',
+    price: 193,
+    previewImage: 'https://14.design.htmlacademy.pro/static/hotel/2.jpg',
+    city: {
+      name: 'Paris',
+      location: {
+        latitude: 48.85661,
+        longitude: 2.351499,
+        zoom: 12
+      }
+    },
+    location: {
+      latitude: 48.8501,
+      longitude: 2.3652,
+      zoom: 16
+    },
+    isFavorite: false,
+    isPremium: true,
+    rating: 3.3,
+    description: 'Enjoy a comfortable stay at Paris Riverside Studio, with thoughtful amenities and an excellent location in Paris.',
+    bedrooms: 1,
+    goods: [
+      'Wi-Fi',
+      'Heating',
+      'Kitchen',
+      'Washing machine'
+    ],
+    host: {
+      name: 'Oliver Conner',
+      avatarUrl: '/img/avatar-max.jpg',
+      isPro: false
+    },
+    images: [
+      'https://14.design.htmlacademy.pro/static/hotel/2.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/2.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/2.jpg'
+    ],
+    maxAdults: 2
   }
 ];

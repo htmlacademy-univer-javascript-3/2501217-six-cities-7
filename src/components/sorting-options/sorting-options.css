@@ -1,0 +1,29 @@
+.sorting-options__toggle,
+.sorting-options__option {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+}
+
+.sorting-options__option {
+  display: block;
+  width: 100%;
+}
+
+.sorting-options__toggle:focus-visible,
+.sorting-options__option:focus-visible {
+  outline: 2px solid #4481c3;
+  outline-offset: 2px;
+}
+
+.sorting-options__toggle {
+  padding: 0 12px 0 0;
+}
+
+.sorting-options__option.places__option--active,
+.sorting-options__option:hover,
+.sorting-options__option:focus-visible {
+  background-color: #f2f2f2;
+}

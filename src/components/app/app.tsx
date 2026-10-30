@@ -10,17 +10,16 @@ import { OfferPage } from '@/pages/offer-page/offer-page';
 import { PrivateRoute } from '@/components/private-route/private-route';
 
 interface AppProps {
-  offers: Offer[];
   favorites: Offer[];
   detailedOffers: DetailedOffer[];
   comments: Review[];
   nearbyOffers: Offer[];
 }
 
-export const App = ({ offers, favorites, detailedOffers, comments, nearbyOffers }: AppProps) => (
+export const App = ({ favorites, detailedOffers, comments, nearbyOffers }: AppProps) => (
   <BrowserRouter>
     <Routes>
-      <Route path={AppRoute.Main} element={<MainPage offers={offers} />} />
+      <Route path={AppRoute.Main} element={<MainPage />} />
       <Route path={AppRoute.Login} element={<LoginPage />} />
       <Route
         path={AppRoute.Favorites}
