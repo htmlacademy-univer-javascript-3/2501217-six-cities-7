@@ -23,6 +23,7 @@ export const OfferPage = ({ offers, comments, nearbyOffers }: OfferPageProps) =>
     return <NotFoundPage title="Offer not found" description="This rental offer could not be found." />;
   }
 
+  const cityNearbyOffers = nearbyOffers.filter((nearbyOffer) => nearbyOffer.city.name === offer.city.name && nearbyOffer.id !== offer.id).slice(0, 3);
   const offerComments = comments.filter((comment) => comment.offerId === offer.id);
   const ratingWidth = `${(offer.rating / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%`;
   const galleryImages = [...new Set(offer.images)].concat(['/img/apartment-01.jpg', '/img/apartment-02.jpg', '/img/studio-01.jpg']).slice(0, 6);
@@ -134,10 +135,10 @@ export const OfferPage = ({ offers, comments, nearbyOffers }: OfferPageProps) =>
               </section>
             </div>
           </div>
-          <Map offers={nearbyOffers} city={offer.city} className="offer__map map" />
+          <Map offers={[...cityNearbyOffers, offer]} activeOfferId={offer.id} city={offer.city} className="offer__map map" />
         </section>
         <div className="container">
-          <NearbyOffersList offers={nearbyOffers} />
+          <NearbyOffersList offers={cityNearbyOffers} />
         </div>
       </main>
     </div>

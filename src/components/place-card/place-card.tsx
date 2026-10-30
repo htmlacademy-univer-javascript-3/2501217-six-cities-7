@@ -8,9 +8,10 @@ interface PlaceCardProps {
   className?: string;
   imageWrapperClassName?: string;
   onMouseEnter?: (offerId: string) => void;
+  onMouseLeave?: () => void;
 }
 
-export const PlaceCard = ({ offer, className = '', imageWrapperClassName, onMouseEnter }: PlaceCardProps) => {
+export const PlaceCard = ({ offer, className = '', imageWrapperClassName, onMouseEnter, onMouseLeave }: PlaceCardProps) => {
   const { id, previewImage, price, title, type, isPremium, isFavorite, rating } = offer;
   const cardClassName = `${className}place-card`.trim();
   const bookmarkClassName = isFavorite
@@ -20,7 +21,7 @@ export const PlaceCard = ({ offer, className = '', imageWrapperClassName, onMous
     ?? (className.includes('favorites__card') ? 'favorites__image-wrapper' : 'cities__image-wrapper');
 
   return (
-    <article className={cardClassName} onMouseEnter={() => onMouseEnter?.(id)}>
+    <article className={cardClassName} onMouseEnter={() => onMouseEnter?.(id)} onMouseLeave={onMouseLeave}>
       {isPremium && (
         <div className="place-card__mark">
           <span>

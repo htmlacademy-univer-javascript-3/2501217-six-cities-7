@@ -1,3 +1,3 @@
 import { offers } from '@/mocks/offers';
 
-export const nearbyOffers = offers.slice(1, 4);
+export const nearbyOffers = offers;
