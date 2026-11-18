@@ -12,6 +12,17 @@ export enum AuthorizationStatus {
   Unknown = 'UNKNOWN',
 }
 
+export const APIRoute = {
+  Offers: '/offers',
+} as const;
+
+export const RequestStatus = {
+  Idle: 'idle',
+  Loading: 'loading',
+  Success: 'success',
+  Error: 'error',
+} as const;
+
 export const MAP_MAX_ZOOM = 19;
 export const MIN_REVIEW_LENGTH = 50;
 export const REVIEW_RATING_RANGE = { min: 1, max: 5 } as const;

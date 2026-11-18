@@ -6,9 +6,11 @@ import { Header } from '@/components/header/header';
 import { CITIES, SortType } from '@/const';
 import { Map } from '@/components/map/map';
 import { SortingOptions } from '@/components/sorting-options/sorting-options';
+import { Spinner } from '@/components/spinner/spinner';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { changeCity } from '@/store/action';
-import { getCity, getCityOffers } from '@/store/selectors';
+import { fetchOffersAction } from '@/store/api-actions';
+import { getCity, getCityOffers, getHasOffersError, getIsOffersLoading } from '@/store/selectors';
 import type { City, Offer } from '@/types/offer';
 import type { Sorting } from '@/types/sorting';
 import { sortOffers } from '@/utils/sort-offers';
@@ -17,6 +19,8 @@ export const MainPage = () => {
   const dispatch = useAppDispatch();
   const city = useAppSelector(getCity);
   const offers = useAppSelector(getCityOffers);
+  const isOffersLoading = useAppSelector(getIsOffersLoading);
+  const hasOffersError = useAppSelector(getHasOffersError);
   const [sorting, setSorting] = useState<Sorting>(SortType.Popular);
   const [activeOfferId, setActiveOfferId] = useState<Offer['id'] | null>(null);
   const sortedOffers = sortOffers(offers, sorting);
@@ -34,6 +38,27 @@ export const MainPage = () => {
     setSorting(selectedSorting);
     setActiveOfferId(null);
   };
+
+  const handleOffersRetryClick = () => {
+    dispatch(fetchOffersAction());
+  };
+
+  if (isOffersLoading || hasOffersError) {
+    return (
+      <div className="page page--gray page--main">
+        <Header />
+        <main className="page__main page__main--index">
+          <h1 className="visually-hidden">Cities</h1>
+          {isOffersLoading ? <Spinner /> : (
+            <div className="cities__status-wrapper" role="alert">
+              <p className="cities__status">Could not load offers. Please try again.</p>
+              <button className="button" type="button" onClick={handleOffersRetryClick}>Try again</button>
+            </div>
+          )}
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="page page--gray page--main">
