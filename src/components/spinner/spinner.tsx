@@ -1,8 +1,12 @@
 import './spinner.css';
 
-export const Spinner = () => (
+interface SpinnerProps {
+  message?: string;
+}
+
+export const Spinner = ({ message = 'Loading offers...' }: SpinnerProps) => (
   <div className="spinner" role="status">
     <span className="spinner__indicator" aria-hidden="true" />
-    <span>Loading offers...</span>
+    <span>{message}</span>
   </div>
 );

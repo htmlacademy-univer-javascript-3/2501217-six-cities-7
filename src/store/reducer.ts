@@ -1,14 +1,16 @@
-import { createReducer } from '@reduxjs/toolkit';
+import { combineReducers, createReducer } from '@reduxjs/toolkit';
 
 import { CITIES, RequestStatus } from '@/const';
 import type { City, Offer } from '@/types/offer';
+import type { RequestState } from '@/types/request-status';
 import { changeCity } from './action';
 import { fetchOffersAction } from './api-actions';
+import { user } from './user';
 
 interface OffersState {
   city: City['name'];
   offers: Offer[];
-  offersStatus: typeof RequestStatus[keyof typeof RequestStatus];
+  offersStatus: RequestState;
 }
 
 const initialState: OffersState = {
@@ -32,4 +34,9 @@ export const offers = createReducer(initialState, (builder) => {
     .addCase(fetchOffersAction.rejected, (state) => {
       state.offersStatus = RequestStatus.Error;
     });
+});
+
+export const reducer = combineReducers({
+  offers,
+  user,
 });

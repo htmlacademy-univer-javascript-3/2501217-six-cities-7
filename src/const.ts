@@ -14,6 +14,8 @@ export enum AuthorizationStatus {
 
 export const APIRoute = {
   Offers: '/offers',
+  Login: '/login',
+  Logout: '/logout',
 } as const;
 
 export const RequestStatus = {
@@ -25,6 +27,7 @@ export const RequestStatus = {
 
 export const MAP_MAX_ZOOM = 19;
 export const MIN_REVIEW_LENGTH = 50;
+export const MIN_PASSWORD_LENGTH = 3;
 export const REVIEW_RATING_RANGE = { min: 1, max: 5 } as const;
 export const RATING_PERCENTAGE_SCALE = 100;
 

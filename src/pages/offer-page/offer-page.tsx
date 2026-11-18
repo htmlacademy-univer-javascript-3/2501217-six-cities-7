@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 
-import { RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
+import { AuthorizationStatus, RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
+import { useAppSelector } from '@/hooks/use-store';
+import { getAuthorizationStatus } from '@/store/selectors';
 import { Header } from '@/components/header/header';
 import { Map } from '@/components/map/map';
 import { NearbyOffersList } from '@/components/nearby-offers-list/nearby-offers-list';
@@ -17,6 +19,7 @@ interface OfferPageProps {
 
 export const OfferPage = ({ offers, comments, nearbyOffers }: OfferPageProps) => {
   const { id } = useParams<{ id: string }>();
+  const authorizationStatus = useAppSelector(getAuthorizationStatus);
   const offer = offers.find((item) => item.id === id);
 
   if (!offer) {
@@ -131,7 +134,7 @@ export const OfferPage = ({ offers, comments, nearbyOffers }: OfferPageProps) =>
               </div>
               <section className="offer__reviews reviews">
                 <ReviewList reviews={offerComments} />
-                <ReviewForm />
+                {authorizationStatus === AuthorizationStatus.Auth && <ReviewForm />}
               </section>
             </div>
           </div>
