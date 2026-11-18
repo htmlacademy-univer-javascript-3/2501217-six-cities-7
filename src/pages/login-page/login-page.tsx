@@ -1,44 +1,94 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { Link, Navigate } from 'react-router-dom';
 
 import { Header } from '@/components/header/header';
-import { AppRoute } from '@/const';
-export const LoginPage = () => (
-  <div className="page page--gray page--login">
-    <Header isAuthorized={false} />
-    <main className="page__main page__main--login">
-      <div className="page__login-container container">
-        <section className="login">
-          <h1 className="login__title">
-            Sign in
-          </h1>
-          <form className="login__form form" action="#" method="post">
-            <div className="login__input-wrapper form__input-wrapper">
-              <label className="visually-hidden" htmlFor="email">
-                E-mail
-              </label>
-              <input className="login__input form__input" id="email" type="email" name="email" placeholder="Email" required />
+import { Spinner } from '@/components/spinner/spinner';
+import { AppRoute, AuthorizationStatus, MIN_PASSWORD_LENGTH } from '@/const';
+import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
+import { loginAction } from '@/store/api-actions';
+import { getAuthError, getAuthorizationStatus, getIsLoginLoading } from '@/store/selectors';
+
+export const LoginPage = () => {
+  const dispatch = useAppDispatch();
+  const authorizationStatus = useAppSelector(getAuthorizationStatus);
+  const isLoginLoading = useAppSelector(getIsLoginLoading);
+  const error = useAppSelector(getAuthError);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleFormSubmit = (evt: FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+
+    if (!isLoginLoading && password.trim()) {
+      dispatch(loginAction({ email: email.trim(), password }));
+    }
+  };
+
+  if (authorizationStatus === AuthorizationStatus.Unknown) {
+    return <Spinner message="Checking authorization..." />;
+  }
+
+  if (authorizationStatus === AuthorizationStatus.Auth) {
+    return <Navigate to={AppRoute.Main} replace />;
+  }
+
+  return (
+    <div className="page page--gray page--login">
+      <Header hideNavigation />
+      <main className="page__main page__main--login">
+        <div className="page__login-container container">
+          <section className="login">
+            <h1 className="login__title">Sign in</h1>
+            <form className="login__form form" onSubmit={handleFormSubmit} aria-busy={isLoginLoading} aria-describedby={error ? 'login-error' : undefined}>
+              {error && <p id="login-error" role="alert">{error}</p>}
+              <div className="login__input-wrapper form__input-wrapper">
+                <label className="visually-hidden" htmlFor="email">E-mail</label>
+                <input
+                  className="login__input form__input"
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  autoComplete="username"
+                  value={email}
+                  onChange={(evt) => setEmail(evt.target.value)}
+                  disabled={isLoginLoading}
+                  required
+                />
+              </div>
+              <div className="login__input-wrapper form__input-wrapper">
+                <label className="visually-hidden" htmlFor="password">Password</label>
+                <input
+                  className="login__input form__input"
+                  id="password"
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  autoComplete="current-password"
+                  minLength={MIN_PASSWORD_LENGTH}
+                  pattern="(?=.*[A-Za-z])(?=.*[0-9]).+"
+                  title="Use at least one letter and one number."
+                  value={password}
+                  onChange={(evt) => setPassword(evt.target.value)}
+                  disabled={isLoginLoading}
+                  required
+                />
+              </div>
+              <button className="login__submit form__submit button" type="submit" disabled={isLoginLoading}>
+                {isLoginLoading ? 'Signing in...' : 'Sign in'}
+              </button>
+            </form>
+          </section>
+          <section className="locations locations--login locations--current">
+            <div className="locations__item">
+              <Link className="locations__item-link" to={AppRoute.Main}>
+                <span>Amsterdam</span>
+              </Link>
             </div>
-            <div className="login__input-wrapper form__input-wrapper">
-              <label className="visually-hidden" htmlFor="password">
-                Password
-              </label>
-              <input className="login__input form__input" id="password" type="password" name="password" placeholder="Password" required />
-            </div>
-            <button className="login__submit form__submit button" type="submit">
-              Sign in
-            </button>
-          </form>
-        </section>
-        <section className="locations locations--login locations--current">
-          <div className="locations__item">
-            <Link className="locations__item-link" to={AppRoute.Main}>
-              <span>
-                Amsterdam
-              </span>
-            </Link>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-);
+          </section>
+        </div>
+      </main>
+    </div>
+  );
+};

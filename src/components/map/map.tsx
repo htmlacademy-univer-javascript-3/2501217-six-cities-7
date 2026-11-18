@@ -5,7 +5,7 @@ import { MAP_MAX_ZOOM } from '@/const';
 import type { Offer } from '@/types/offer';
 
 interface MapProps {
-  offers: Offer[];
+  offers: Pick<Offer, 'id' | 'title' | 'location'>[];
   city: Offer['city'];
   className?: string;
   activeOfferId?: Offer['id'] | null;

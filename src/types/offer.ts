@@ -26,7 +26,7 @@ export interface Host {
   isPro: boolean;
 }
 
-export interface DetailedOffer extends Offer {
+export interface DetailedOffer extends Omit<Offer, 'previewImage'> {
   description: string;
   bedrooms: number;
   goods: string[];
@@ -37,9 +37,20 @@ export interface DetailedOffer extends Offer {
 
 export interface Review {
   id: string;
-  offerId: string;
   date: string;
   user: Host;
+  comment: string;
+  rating: number;
+}
+
+export interface OfferPageData {
+  offer: DetailedOffer;
+  nearbyOffers: Offer[];
+  comments: Review[];
+}
+
+export interface ReviewData {
+  offerId: Offer['id'];
   comment: string;
   rating: number;
 }
