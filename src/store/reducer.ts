@@ -6,6 +6,7 @@ import type { RequestState } from '@/types/request-status';
 import { changeCity } from './action';
 import { fetchOffersAction } from './api-actions';
 import { user } from './user';
+import { offer } from './offer';
 
 interface OffersState {
   city: City['name'];
@@ -39,4 +40,5 @@ export const offers = createReducer(initialState, (builder) => {
 export const reducer = combineReducers({
   offers,
   user,
+  offer,
 });

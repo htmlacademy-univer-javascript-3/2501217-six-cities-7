@@ -21,7 +21,7 @@ export const ReviewItem = ({review}: ReviewItemProps) => {
       <div className="reviews__info">
         <div className="reviews__rating rating">
           <div className="reviews__stars rating__stars">
-            <span style={{ width: `${(review.rating / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%`}}/>
+            <span style={{ width: `${(Math.round(review.rating) / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%`}}/>
             <span className="visually-hidden">
               Rating
             </span>

@@ -1,35 +1,67 @@
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
 
-import { AuthorizationStatus, RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
-import { useAppSelector } from '@/hooks/use-store';
-import { getAuthorizationStatus } from '@/store/selectors';
+import { AppRoute, AuthorizationStatus, MAX_OFFER_IMAGES_COUNT, NEARBY_OFFERS_COUNT, RATING_PERCENTAGE_SCALE, RequestStatus, REVIEW_RATING_RANGE } from '@/const';
+import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
+import { clearOffer } from '@/store/action';
+import { fetchOfferAction } from '@/store/api-actions';
+import { getAuthorizationStatus, getIsOfferNotFound, getNearbyOffers, getOffer, getOfferComments, getOfferStatus, getRequestedOfferId, getReviewError } from '@/store/selectors';
 import { Header } from '@/components/header/header';
 import { Map } from '@/components/map/map';
 import { NearbyOffersList } from '@/components/nearby-offers-list/nearby-offers-list';
 import { ReviewForm } from '@/components/review-form/review-form';
 import { ReviewList } from '@/components/review-list/review-list';
-import { NotFoundPage } from '@/pages/not-found-page/not-found-page';
-import type { DetailedOffer, Offer, Review } from '@/types/offer';
-
-interface OfferPageProps {
-  offers: DetailedOffer[];
-  comments: Review[];
-  nearbyOffers: Offer[];
-}
-
-export const OfferPage = ({ offers, comments, nearbyOffers }: OfferPageProps) => {
+export const OfferPage = () => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
   const authorizationStatus = useAppSelector(getAuthorizationStatus);
-  const offer = offers.find((item) => item.id === id);
+  const offer = useAppSelector(getOffer);
+  const nearbyOffers = useAppSelector(getNearbyOffers);
+  const comments = useAppSelector(getOfferComments);
+  const status = useAppSelector(getOfferStatus);
+  const requestedOfferId = useAppSelector(getRequestedOfferId);
+  const isOfferNotFound = useAppSelector(getIsOfferNotFound);
+  const reviewError = useAppSelector(getReviewError);
 
-  if (!offer) {
-    return <NotFoundPage title="Offer not found" description="This rental offer could not be found." />;
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    const request = dispatch(fetchOfferAction(id));
+
+    return () => {
+      request.abort();
+      dispatch(clearOffer());
+    };
+  }, [dispatch, id]);
+
+  if (!id) {
+    return <Navigate to={AppRoute.NotFound} replace />;
   }
 
-  const cityNearbyOffers = nearbyOffers.filter((nearbyOffer) => nearbyOffer.city.name === offer.city.name && nearbyOffer.id !== offer.id).slice(0, 3);
-  const offerComments = comments.filter((comment) => comment.offerId === offer.id);
-  const ratingWidth = `${(offer.rating / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%`;
-  const galleryImages = [...new Set(offer.images)].concat(['/img/apartment-01.jpg', '/img/apartment-02.jpg', '/img/studio-01.jpg']).slice(0, 6);
+  if (requestedOfferId !== id || status === RequestStatus.Idle || status === RequestStatus.Loading) {
+    return null;
+  }
+
+  if (isOfferNotFound) {
+    return <Navigate to={AppRoute.NotFound} replace />;
+  }
+
+  if (status === RequestStatus.Error || !offer) {
+    return (
+      <div className="page">
+        <Header />
+        <main className="page__main page__main--offer container">
+          <p role="alert">Could not load the offer. Please try again later.</p>
+        </main>
+      </div>
+    );
+  }
+
+  const cityNearbyOffers = nearbyOffers.slice(0, NEARBY_OFFERS_COUNT);
+  const ratingWidth = `${(Math.round(offer.rating) / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%`;
+  const galleryImages = offer.images.slice(0, MAX_OFFER_IMAGES_COUNT);
 
   return (
     <div className="page">
@@ -80,13 +112,13 @@ export const OfferPage = ({ offers, comments, nearbyOffers }: OfferPageProps) =>
               </div>
               <ul className="offer__features">
                 <li className="offer__feature offer__feature--entire">
-                  {offer.type}
+                  {offer.type.charAt(0).toUpperCase() + offer.type.slice(1)}
                 </li>
                 <li className="offer__feature offer__feature--bedrooms">
-                  {offer.bedrooms} Bedrooms
+                  {offer.bedrooms} {offer.bedrooms === 1 ? 'Bedroom' : 'Bedrooms'}
                 </li>
                 <li className="offer__feature offer__feature--adults">
-                  Max {offer.maxAdults} adults
+                  Max {offer.maxAdults} {offer.maxAdults === 1 ? 'adult' : 'adults'}
                 </li>
               </ul>
               <div className="offer__price">
@@ -133,8 +165,9 @@ export const OfferPage = ({ offers, comments, nearbyOffers }: OfferPageProps) =>
                 </div>
               </div>
               <section className="offer__reviews reviews">
-                <ReviewList reviews={offerComments} />
-                {authorizationStatus === AuthorizationStatus.Auth && <ReviewForm />}
+                <ReviewList reviews={comments} />
+                {reviewError && <p role="alert">{reviewError}</p>}
+                {authorizationStatus === AuthorizationStatus.Auth && <ReviewForm key={offer.id} offerId={offer.id} />}
               </section>
             </div>
           </div>

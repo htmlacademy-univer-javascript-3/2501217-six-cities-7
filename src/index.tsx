@@ -5,8 +5,6 @@ import { Provider } from 'react-redux';
 import { store } from '@/store';
 import { checkAuthAction, fetchOffersAction } from '@/store/api-actions';
 
-import { comments } from '@/mocks/comments';
-import { detailedOffers } from '@/mocks/detailed-offers';
 import { App } from './components/app/app';
 import './components/map/map.css';
 import 'leaflet/dist/leaflet.css';
@@ -20,7 +18,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App detailedOffers={detailedOffers} comments={comments} />
+      <App />
     </Provider>
   </React.StrictMode>
 );

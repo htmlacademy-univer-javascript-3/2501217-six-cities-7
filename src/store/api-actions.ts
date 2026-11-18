@@ -6,7 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 import { APIRoute } from '@/const';
 import { dropToken, saveToken } from '@/services/token';
 import type { AuthData, UserData } from '@/types/auth';
-import type { Offer } from '@/types/offer';
+import type { DetailedOffer, Offer, OfferPageData, Review, ReviewData } from '@/types/offer';
 import { isAuthInfo } from '@/utils/is-auth-info';
 import { isOffer } from '@/utils/is-offer';
 
@@ -82,5 +82,40 @@ export const logoutAction = createAsyncThunk<void, undefined, ThunkConfig>(
 
     dropToken();
     dispatch(fetchOffersAction());
+  }
+);
+
+export const fetchOfferAction = createAsyncThunk<OfferPageData, Offer['id'], { extra: AxiosInstance; rejectValue: number }>(
+  'offer/fetchOffer',
+  async (offerId, { extra: api, rejectWithValue, signal }) => {
+    try {
+      const offerPath = `${APIRoute.Offers}/${offerId}`;
+      const { data: offer } = await api.get<DetailedOffer>(offerPath, { signal });
+      const [{ data: nearbyOffers }, { data: comments }] = await Promise.all([
+        api.get<Offer[]>(`${offerPath}/nearby`, { signal }),
+        api.get<Review[]>(`${APIRoute.Comments}/${offerId}`, { signal }),
+      ]);
+
+      return { offer, nearbyOffers, comments };
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === StatusCodes.NOT_FOUND) {
+        return rejectWithValue(StatusCodes.NOT_FOUND);
+      }
+
+      throw error;
+    }
+  }
+);
+
+export const postReviewAction = createAsyncThunk<Review, ReviewData, ThunkConfig>(
+  'offer/postReview',
+  async ({ offerId, comment, rating }, { extra: api, rejectWithValue }) => {
+    try {
+      const { data } = await api.post<Review>(`${APIRoute.Comments}/${offerId}`, { comment, rating });
+
+      return data;
+    } catch {
+      return rejectWithValue('Could not submit your review. Please try again.');
+    }
   }
 );
