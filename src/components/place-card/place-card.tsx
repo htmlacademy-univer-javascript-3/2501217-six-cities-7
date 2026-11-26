@@ -1,5 +1,7 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 
+import { BookmarkButton } from '@/components/bookmark-button/bookmark-button';
 import { AppRoute, RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
 import type { Offer } from '@/types/offer';
 
@@ -7,21 +9,20 @@ interface PlaceCardProps {
   offer: Offer;
   className?: string;
   imageWrapperClassName?: string;
-  onMouseEnter?: (offerId: string) => void;
-  onMouseLeave?: () => void;
+  onActiveOfferChange?: (offerId: Offer['id'] | null) => void;
 }
 
-export const PlaceCard = ({ offer, className = '', imageWrapperClassName, onMouseEnter, onMouseLeave }: PlaceCardProps) => {
-  const { id, previewImage, price, title, type, isPremium, isFavorite, rating } = offer;
+const PlaceCardView = ({ offer, className = '', imageWrapperClassName, onActiveOfferChange }: PlaceCardProps) => {
+  const { id, previewImage, price, title, type, isPremium, rating } = offer;
   const cardClassName = `${className}place-card`.trim();
-  const bookmarkClassName = isFavorite
-    ? 'place-card__bookmark-button place-card__bookmark-button--active button'
-    : 'place-card__bookmark-button button';
   const resolvedImageWrapperClassName = imageWrapperClassName
     ?? (className.includes('favorites__card') ? 'favorites__image-wrapper' : 'cities__image-wrapper');
 
+  const handleCardMouseEnter = () => onActiveOfferChange?.(id);
+  const handleCardMouseLeave = () => onActiveOfferChange?.(null);
+
   return (
-    <article className={cardClassName} onMouseEnter={() => onMouseEnter?.(id)} onMouseLeave={onMouseLeave}>
+    <article className={cardClassName} onMouseEnter={handleCardMouseEnter} onMouseLeave={handleCardMouseLeave}>
       {isPremium && (
         <div className="place-card__mark">
           <span>
@@ -44,14 +45,7 @@ export const PlaceCard = ({ offer, className = '', imageWrapperClassName, onMous
               /&nbsp;night
             </span>
           </div>
-          <button className={bookmarkClassName} type="button">
-            <svg className="place-card__bookmark-icon" width="18" height="19">
-              <use xlinkHref="#icon-bookmark" />
-            </svg>
-            <span className="visually-hidden">
-              {isFavorite ? 'In bookmarks' : 'To bookmarks'}
-            </span>
-          </button>
+          <BookmarkButton offerId={id} variant="place-card" />
         </div>
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
@@ -73,3 +67,5 @@ export const PlaceCard = ({ offer, className = '', imageWrapperClassName, onMous
     </article>
   );
 };
+
+export const PlaceCard = memo(PlaceCardView);

@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import { ReviewItem } from '@/components/review-item/review-item';
 import { MAX_REVIEWS_COUNT } from '@/const';
 import type { Review } from '@/types/offer';
@@ -6,7 +8,7 @@ interface ReviewListProps {
   reviews: Review[];
 }
 
-export const ReviewList = ({ reviews }: ReviewListProps) => {
+const ReviewListView = ({ reviews }: ReviewListProps) => {
   const visibleReviews = [...reviews]
     .sort((first, second) => Date.parse(second.date) - Date.parse(first.date))
     .slice(0, MAX_REVIEWS_COUNT);
@@ -24,3 +26,5 @@ export const ReviewList = ({ reviews }: ReviewListProps) => {
     </>
   );
 };
+
+export const ReviewList = memo(ReviewListView);

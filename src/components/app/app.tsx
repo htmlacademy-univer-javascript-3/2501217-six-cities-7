@@ -3,8 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AppRoute, AuthorizationStatus } from '@/const';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
-import { checkAuthAction, fetchOffersAction } from '@/store/api-actions';
-import { getAuthorizationStatus, getFavoriteOffers } from '@/store/selectors';
+import { checkAuthAction, fetchFavoritesAction, fetchOffersAction } from '@/store/api-actions';
+import { getAuthorizationStatus } from '@/store/selectors';
 import { FavoritesPage } from '@/pages/favorites-page/favorites-page';
 import { LoginPage } from '@/pages/login-page/login-page';
 import { MainPage } from '@/pages/main-page/main-page';
@@ -15,7 +15,6 @@ import { Spinner } from '@/components/spinner/spinner';
 
 export const App = () => {
   const dispatch = useAppDispatch();
-  const favorites = useAppSelector(getFavoriteOffers);
   const authorizationStatus = useAppSelector(getAuthorizationStatus);
   const hasStartedAuthCheck = useRef(false);
 
@@ -29,6 +28,10 @@ export const App = () => {
   useEffect(() => {
     if (authorizationStatus !== AuthorizationStatus.Unknown) {
       dispatch(fetchOffersAction());
+    }
+
+    if (authorizationStatus === AuthorizationStatus.Auth) {
+      dispatch(fetchFavoritesAction());
     }
   }, [authorizationStatus, dispatch]);
 
@@ -45,7 +48,7 @@ export const App = () => {
           path={AppRoute.Favorites}
           element={(
             <PrivateRoute>
-              <FavoritesPage offers={favorites} />
+              <FavoritesPage />
             </PrivateRoute>
           )}
         />

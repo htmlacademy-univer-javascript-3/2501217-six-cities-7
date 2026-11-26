@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 import { SortType } from '@/const';
 import type { Sorting } from '@/types/sorting';
@@ -9,7 +9,7 @@ interface SortingOptionsProps {
   onSortingChange: (sorting: Sorting) => void;
 }
 
-export const SortingOptions = ({ sorting, onSortingChange }: SortingOptionsProps) => {
+const SortingOptionsView = ({ sorting, onSortingChange }: SortingOptionsProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const sortingRef = useRef<HTMLDivElement>(null);
 
@@ -81,3 +81,5 @@ export const SortingOptions = ({ sorting, onSortingChange }: SortingOptionsProps
     </div>
   );
 };
+
+export const SortingOptions = memo(SortingOptionsView);

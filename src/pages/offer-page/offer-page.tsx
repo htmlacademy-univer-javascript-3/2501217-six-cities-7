@@ -1,26 +1,25 @@
 import { useEffect } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
-import { AppRoute, AuthorizationStatus, MAX_OFFER_IMAGES_COUNT, NEARBY_OFFERS_COUNT, OfferRequestStatus, RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
+import { AppRoute, MAX_OFFER_IMAGES_COUNT, OfferRequestStatus, RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { clearOffer } from '@/store/action';
 import { fetchOfferAction } from '@/store/api-actions';
-import { getAuthorizationStatus, getNearbyOffers, getOffer, getOfferComments, getOfferStatus, getRequestedOfferId, getReviewError } from '@/store/selectors';
+import { getOffer, getOfferMapOffers, getOfferStatus, getRequestedOfferId, getVisibleNearbyOffers } from '@/store/selectors';
+import { BookmarkButton } from '@/components/bookmark-button/bookmark-button';
 import { Header } from '@/components/header/header';
 import { Map } from '@/components/map/map';
 import { NearbyOffersList } from '@/components/nearby-offers-list/nearby-offers-list';
-import { ReviewForm } from '@/components/review-form/review-form';
-import { ReviewList } from '@/components/review-list/review-list';
+import { OfferReviews } from './offer-reviews';
+
 export const OfferPage = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const authorizationStatus = useAppSelector(getAuthorizationStatus);
   const offer = useAppSelector(getOffer);
-  const nearbyOffers = useAppSelector(getNearbyOffers);
-  const comments = useAppSelector(getOfferComments);
+  const nearbyOffers = useAppSelector(getVisibleNearbyOffers);
+  const mapOffers = useAppSelector(getOfferMapOffers);
   const status = useAppSelector(getOfferStatus);
   const requestedOfferId = useAppSelector(getRequestedOfferId);
-  const reviewError = useAppSelector(getReviewError);
 
   useEffect(() => {
     if (!id) {
@@ -54,7 +53,6 @@ export const OfferPage = () => {
     );
   }
 
-  const cityNearbyOffers = nearbyOffers.slice(0, NEARBY_OFFERS_COUNT);
   const ratingWidth = `${(Math.round(offer.rating) / REVIEW_RATING_RANGE.max) * RATING_PERCENTAGE_SCALE}%`;
   const galleryImages = offer.images.slice(0, MAX_OFFER_IMAGES_COUNT);
 
@@ -85,14 +83,7 @@ export const OfferPage = () => {
                 <h1 className="offer__name">
                   {offer.title}
                 </h1>
-                <button className={`offer__bookmark-button${offer.isFavorite ? ' offer__bookmark-button--active' : ''} button`} type="button">
-                  <svg className="offer__bookmark-icon" width="31" height="33">
-                    <use xlinkHref="#icon-bookmark" />
-                  </svg>
-                  <span className="visually-hidden">
-                    {offer.isFavorite ? 'In bookmarks' : 'To bookmarks'}
-                  </span>
-                </button>
+                <BookmarkButton offerId={offer.id} variant="offer" />
               </div>
               <div className="offer__rating rating">
                 <div className="offer__stars rating__stars">
@@ -159,17 +150,13 @@ export const OfferPage = () => {
                   </p>
                 </div>
               </div>
-              <section className="offer__reviews reviews">
-                <ReviewList reviews={comments} />
-                {reviewError && <p role="alert">{reviewError}</p>}
-                {authorizationStatus === AuthorizationStatus.Auth && <ReviewForm key={offer.id} offerId={offer.id} />}
-              </section>
+              <OfferReviews key={offer.id} offerId={offer.id} />
             </div>
           </div>
-          <Map offers={[...cityNearbyOffers, offer]} activeOfferId={offer.id} city={offer.city} className="offer__map map" />
+          <Map offers={mapOffers} activeOfferId={offer.id} city={offer.city} className="offer__map map" />
         </section>
         <div className="container">
-          <NearbyOffersList offers={cityNearbyOffers} />
+          <NearbyOffersList offers={nearbyOffers} />
         </div>
       </main>
     </div>

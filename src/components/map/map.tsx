@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import L from 'leaflet';
 
 import { MAP_MAX_ZOOM } from '@/const';
@@ -22,11 +22,12 @@ const activeIcon = L.icon({
   iconUrl: '/img/pin-active.svg',
 });
 
-export const Map = ({ offers, city, activeOfferId = null, className = 'cities__map map' }: MapProps) => {
+const OffersMap = ({ offers, city, activeOfferId = null, className = 'cities__map map' }: MapProps) => {
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
-  const markersRef = useRef<{ offerId: Offer['id']; marker: L.Marker }[]>([]);
+  const markersRef = useRef<globalThis.Map<Offer['id'], L.Marker>>();
+  const activeMarkerRef = useRef<L.Marker | undefined>();
 
   useEffect(() => {
     if (!mapContainerRef.current) {
@@ -58,27 +59,36 @@ export const Map = ({ offers, city, activeOfferId = null, className = 'cities__m
   }, [city.location.latitude, city.location.longitude, city.location.zoom]);
 
   useEffect(() => {
-    const map = mapInstanceRef.current;
     const markersLayer = markersLayerRef.current;
 
-    if (!map || !markersLayer) {
+    if (!markersLayer) {
       return;
     }
 
     markersLayer.clearLayers();
-    markersRef.current = offers.map((offer) => {
+    const markers = new globalThis.Map<Offer['id'], L.Marker>();
+    markersRef.current = markers;
+    activeMarkerRef.current = undefined;
+
+    for (const offer of offers) {
       const marker = L.marker([offer.location.latitude, offer.location.longitude], { icon: defaultIcon })
         .addTo(markersLayer)
         .bindPopup(offer.title);
-      return { offerId: offer.id, marker };
-    });
+      markers.set(offer.id, marker);
+    }
   }, [offers]);
 
   useEffect(() => {
-    markersRef.current.forEach(({ offerId, marker }) => {
-      marker.setIcon(offerId === activeOfferId ? activeIcon : defaultIcon);
-    });
+    const activeMarker = activeOfferId === null ? undefined : markersRef.current?.get(activeOfferId);
+
+    if (activeMarkerRef.current !== activeMarker) {
+      activeMarkerRef.current?.setIcon(defaultIcon);
+      activeMarker?.setIcon(activeIcon);
+      activeMarkerRef.current = activeMarker;
+    }
   }, [activeOfferId, offers]);
 
   return <section className={className} ref={mapContainerRef} aria-label="Map of rental offers" />;
 };
+
+export const Map = memo(OffersMap);

@@ -3,8 +3,9 @@ import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 import { StatusCodes } from 'http-status-codes';
 
-import { APIRoute } from '@/const';
+import { APIRoute, AuthorizationStatus, FavoriteStatus } from '@/const';
 import { dropToken, saveToken } from '@/services/token';
+import type { State } from '@/store';
 import type { AuthData, UserData } from '@/types/auth';
 import type { DetailedOffer, Offer, OfferPageData, Review, ReviewData } from '@/types/offer';
 import { isAuthInfo } from '@/utils/is-auth-info';
@@ -14,6 +15,55 @@ interface ThunkConfig {
   extra: AxiosInstance;
   rejectValue: string;
 }
+
+interface FavoriteUpdate {
+  offerId: Offer['id'];
+  isFavorite: boolean;
+}
+
+export const fetchFavoritesAction = createAsyncThunk<Offer[], undefined, ThunkConfig & { state: State }>(
+  'favorites/fetchFavorites',
+  async (_arg, { extra: api }) => {
+    const { data } = await api.get<unknown>(APIRoute.Favorite);
+
+    if (!Array.isArray(data) || !data.every(isOffer)) {
+      throw new Error('Invalid favorites response');
+    }
+
+    return data;
+  },
+  {
+    condition: (_arg, { getState }) => {
+      const { user, favorites } = getState();
+      return user.authorizationStatus === AuthorizationStatus.Auth && favorites.requestId === null;
+    },
+  }
+);
+
+export const updateFavoriteAction = createAsyncThunk<Offer, FavoriteUpdate, ThunkConfig & { state: State }>(
+  'favorites/updateFavorite',
+  async ({ offerId, isFavorite }, { dispatch, extra: api, rejectWithValue }) => {
+    try {
+      const status = isFavorite ? FavoriteStatus.Add : FavoriteStatus.Remove;
+      const { data } = await api.post<unknown>(`${APIRoute.Favorite}/${encodeURIComponent(offerId)}/${status}`);
+
+      if (!isOffer(data) || data.id !== offerId) {
+        throw new Error('Invalid favorite response');
+      }
+
+      return data;
+    } catch {
+      dispatch(fetchFavoritesAction());
+      return rejectWithValue('Could not update your bookmarks. Please try again.');
+    }
+  },
+  {
+    condition: ({ offerId }, { getState }) => {
+      const { user, favorites } = getState();
+      return user.authorizationStatus === AuthorizationStatus.Auth && !favorites.pendingById[offerId];
+    },
+  }
+);
 
 export const fetchOffersAction = createAsyncThunk<Offer[], undefined, { extra: AxiosInstance }>(
   'offers/fetchOffers',
@@ -110,7 +160,7 @@ export const fetchOfferAction = createAsyncThunk<OfferPageData, Offer['id'], { e
 );
 
 export const postReviewAction = createAsyncThunk<Review, ReviewData, ThunkConfig>(
-  'offer/postReview',
+  'reviews/postReview',
   async ({ offerId, comment, rating }, { extra: api, rejectWithValue }) => {
     try {
       const { data } = await api.post<Review>(`${APIRoute.Comments}/${offerId}`, { comment, rating });
