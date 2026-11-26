@@ -26,6 +26,11 @@ export const RequestStatus = {
   Error: 'error',
 } as const;
 
+export const OfferRequestStatus = {
+  ...RequestStatus,
+  NotFound: 'not-found',
+} as const;
+
 export const MAP_MAX_ZOOM = 19;
 export const MIN_REVIEW_LENGTH = 50;
 export const MAX_REVIEW_LENGTH = 300;

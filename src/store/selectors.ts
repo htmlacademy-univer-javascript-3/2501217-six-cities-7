@@ -1,5 +1,4 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { StatusCodes } from 'http-status-codes';
 
 import { RequestStatus } from '@/const';
 import type { State } from '@/store';
@@ -20,7 +19,6 @@ export const getNearbyOffers = (state: State) => state.offer.nearbyOffers;
 export const getOfferComments = (state: State) => state.offer.comments;
 export const getRequestedOfferId = (state: State) => state.offer.requestedOfferId;
 export const getOfferStatus = (state: State) => state.offer.status;
-export const getIsOfferNotFound = (state: State) => state.offer.errorStatus === StatusCodes.NOT_FOUND;
 export const getIsReviewSubmitting = (state: State) => state.offer.reviewStatus === RequestStatus.Loading;
 export const getReviewError = (state: State) => state.offer.reviewError;
 

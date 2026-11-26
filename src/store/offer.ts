@@ -1,19 +1,21 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { StatusCodes } from 'http-status-codes';
 
-import { RequestStatus } from '@/const';
+import { OfferRequestStatus, RequestStatus } from '@/const';
 import type { DetailedOffer, Offer, Review } from '@/types/offer';
 import type { RequestState } from '@/types/request-status';
 import { clearOffer } from './action';
 import { fetchOfferAction, postReviewAction } from './api-actions';
 
+type OfferStatus = typeof OfferRequestStatus[keyof typeof OfferRequestStatus];
+
 interface OfferState {
   offer: DetailedOffer | null;
   nearbyOffers: Offer[];
   comments: Review[];
-  status: RequestState;
+  status: OfferStatus;
   requestedOfferId: Offer['id'] | null;
   requestId: string | null;
-  errorStatus: number | null;
   reviewStatus: RequestState;
   reviewError: string | null;
 }
@@ -22,10 +24,9 @@ const initialState: OfferState = {
   offer: null,
   nearbyOffers: [],
   comments: [],
-  status: RequestStatus.Idle,
+  status: OfferRequestStatus.Idle,
   requestedOfferId: null,
   requestId: null,
-  errorStatus: null,
   reviewStatus: RequestStatus.Idle,
   reviewError: null,
 };
@@ -35,7 +36,7 @@ export const offer = createReducer(initialState, (builder) => {
     .addCase(clearOffer, () => initialState)
     .addCase(fetchOfferAction.pending, (_state, action) => ({
       ...initialState,
-      status: RequestStatus.Loading,
+      status: OfferRequestStatus.Loading,
       requestedOfferId: action.meta.arg,
       requestId: action.meta.requestId,
     }))
@@ -47,15 +48,14 @@ export const offer = createReducer(initialState, (builder) => {
       state.offer = action.payload.offer;
       state.nearbyOffers = action.payload.nearbyOffers;
       state.comments = action.payload.comments;
-      state.status = RequestStatus.Success;
+      state.status = OfferRequestStatus.Success;
     })
     .addCase(fetchOfferAction.rejected, (state, action) => {
       if (state.requestId !== action.meta.requestId) {
         return;
       }
 
-      state.status = RequestStatus.Error;
-      state.errorStatus = action.payload ?? null;
+      state.status = action.payload === StatusCodes.NOT_FOUND ? OfferRequestStatus.NotFound : OfferRequestStatus.Error;
     })
     .addCase(postReviewAction.pending, (state, action) => {
       if (state.offer?.id === action.meta.arg.offerId) {

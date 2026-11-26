@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
-import { AppRoute, AuthorizationStatus, MAX_OFFER_IMAGES_COUNT, NEARBY_OFFERS_COUNT, RATING_PERCENTAGE_SCALE, RequestStatus, REVIEW_RATING_RANGE } from '@/const';
+import { AppRoute, AuthorizationStatus, MAX_OFFER_IMAGES_COUNT, NEARBY_OFFERS_COUNT, OfferRequestStatus, RATING_PERCENTAGE_SCALE, REVIEW_RATING_RANGE } from '@/const';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { clearOffer } from '@/store/action';
 import { fetchOfferAction } from '@/store/api-actions';
-import { getAuthorizationStatus, getIsOfferNotFound, getNearbyOffers, getOffer, getOfferComments, getOfferStatus, getRequestedOfferId, getReviewError } from '@/store/selectors';
+import { getAuthorizationStatus, getNearbyOffers, getOffer, getOfferComments, getOfferStatus, getRequestedOfferId, getReviewError } from '@/store/selectors';
 import { Header } from '@/components/header/header';
 import { Map } from '@/components/map/map';
 import { NearbyOffersList } from '@/components/nearby-offers-list/nearby-offers-list';
@@ -20,7 +20,6 @@ export const OfferPage = () => {
   const comments = useAppSelector(getOfferComments);
   const status = useAppSelector(getOfferStatus);
   const requestedOfferId = useAppSelector(getRequestedOfferId);
-  const isOfferNotFound = useAppSelector(getIsOfferNotFound);
   const reviewError = useAppSelector(getReviewError);
 
   useEffect(() => {
@@ -36,19 +35,15 @@ export const OfferPage = () => {
     };
   }, [dispatch, id]);
 
-  if (!id) {
+  if (!id || (requestedOfferId === id && status === OfferRequestStatus.NotFound)) {
     return <Navigate to={AppRoute.NotFound} replace />;
   }
 
-  if (requestedOfferId !== id || status === RequestStatus.Idle || status === RequestStatus.Loading) {
+  if (requestedOfferId !== id || status === OfferRequestStatus.Loading) {
     return null;
   }
 
-  if (isOfferNotFound) {
-    return <Navigate to={AppRoute.NotFound} replace />;
-  }
-
-  if (status === RequestStatus.Error || !offer) {
+  if (status === OfferRequestStatus.Error || !offer) {
     return (
       <div className="page">
         <Header />

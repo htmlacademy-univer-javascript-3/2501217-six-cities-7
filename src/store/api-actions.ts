@@ -46,7 +46,7 @@ export const checkAuthAction = createAsyncThunk<UserData, undefined, ThunkConfig
 
 export const loginAction = createAsyncThunk<UserData, AuthData, ThunkConfig>(
   'user/login',
-  async (authData, { dispatch, extra: api, rejectWithValue }) => {
+  async (authData, { extra: api, rejectWithValue }) => {
     try {
       const { data } = await api.post<unknown>(APIRoute.Login, authData);
 
@@ -56,7 +56,6 @@ export const loginAction = createAsyncThunk<UserData, AuthData, ThunkConfig>(
 
       const { token, ...user } = data;
       saveToken(token);
-      dispatch(fetchOffersAction());
 
       return user;
     } catch (error) {
@@ -71,7 +70,7 @@ export const loginAction = createAsyncThunk<UserData, AuthData, ThunkConfig>(
 
 export const logoutAction = createAsyncThunk<void, undefined, ThunkConfig>(
   'user/logout',
-  async (_arg, { dispatch, extra: api, rejectWithValue }) => {
+  async (_arg, { extra: api, rejectWithValue }) => {
     try {
       await api.delete(APIRoute.Logout);
     } catch (error) {
@@ -81,7 +80,6 @@ export const logoutAction = createAsyncThunk<void, undefined, ThunkConfig>(
     }
 
     dropToken();
-    dispatch(fetchOffersAction());
   }
 );
 
@@ -91,12 +89,16 @@ export const fetchOfferAction = createAsyncThunk<OfferPageData, Offer['id'], { e
     try {
       const offerPath = `${APIRoute.Offers}/${offerId}`;
       const { data: offer } = await api.get<DetailedOffer>(offerPath, { signal });
-      const [{ data: nearbyOffers }, { data: comments }] = await Promise.all([
+      const [nearbyOffersResult, commentsResult] = await Promise.allSettled([
         api.get<Offer[]>(`${offerPath}/nearby`, { signal }),
         api.get<Review[]>(`${APIRoute.Comments}/${offerId}`, { signal }),
       ]);
 
-      return { offer, nearbyOffers, comments };
+      return {
+        offer,
+        nearbyOffers: nearbyOffersResult.status === 'fulfilled' ? nearbyOffersResult.value.data : [],
+        comments: commentsResult.status === 'fulfilled' ? commentsResult.value.data : [],
+      };
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === StatusCodes.NOT_FOUND) {
         return rejectWithValue(StatusCodes.NOT_FOUND);
