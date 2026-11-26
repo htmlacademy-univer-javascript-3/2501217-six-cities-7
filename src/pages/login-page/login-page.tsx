@@ -8,20 +8,22 @@ import { AppRoute, AuthorizationStatus, MIN_PASSWORD_LENGTH } from '@/const';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { loginAction } from '@/store/api-actions';
 import { getAuthError, getAuthorizationStatus, getIsLoginLoading } from '@/store/selectors';
+import type { AuthData } from '@/types/auth';
 
 export const LoginPage = () => {
   const dispatch = useAppDispatch();
   const authorizationStatus = useAppSelector(getAuthorizationStatus);
   const isLoginLoading = useAppSelector(getIsLoginLoading);
   const error = useAppSelector(getAuthError);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState<AuthData>({ email: '', password: '' });
 
   const handleFormSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
 
-    if (!isLoginLoading && password.trim()) {
-      dispatch(loginAction({ email: email.trim(), password }));
+    const email = formData.email.trim();
+
+    if (!isLoginLoading && email && formData.password.trim()) {
+      dispatch(loginAction({ email, password: formData.password }));
     }
   };
 
@@ -51,8 +53,8 @@ export const LoginPage = () => {
                   name="email"
                   placeholder="Email"
                   autoComplete="username"
-                  value={email}
-                  onChange={(evt) => setEmail(evt.target.value)}
+                  value={formData.email}
+                  onChange={(evt) => setFormData((current) => ({ ...current, email: evt.target.value }))}
                   disabled={isLoginLoading}
                   required
                 />
@@ -69,8 +71,8 @@ export const LoginPage = () => {
                   minLength={MIN_PASSWORD_LENGTH}
                   pattern="(?=.*[A-Za-z])(?=.*[0-9]).+"
                   title="Use at least one letter and one number."
-                  value={password}
-                  onChange={(evt) => setPassword(evt.target.value)}
+                  value={formData.password}
+                  onChange={(evt) => setFormData((current) => ({ ...current, password: evt.target.value }))}
                   disabled={isLoginLoading}
                   required
                 />

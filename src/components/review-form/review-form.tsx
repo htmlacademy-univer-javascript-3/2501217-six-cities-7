@@ -11,6 +11,8 @@ interface ReviewFormProps {
   offerId: Offer['id'];
 }
 
+const REVIEW_RATINGS = [5, 4, 3, 2, 1] as const;
+
 export const ReviewForm = ({ offerId }: ReviewFormProps) => {
   const dispatch = useAppDispatch();
   const isSubmitting = useAppSelector(getIsReviewSubmitting);
@@ -49,7 +51,7 @@ export const ReviewForm = ({ offerId }: ReviewFormProps) => {
         Your review
       </label>
       <div className="reviews__rating-form form__rating">
-        {[5, 4, 3, 2, 1].map((rating) => (
+        {REVIEW_RATINGS.map((rating) => (
           <Fragment key={rating}>
             <input
               className="form__rating-input visually-hidden"

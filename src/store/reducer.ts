@@ -12,12 +12,14 @@ interface OffersState {
   city: City['name'];
   offers: Offer[];
   offersStatus: RequestState;
+  requestId: string | null;
 }
 
 const initialState: OffersState = {
   city: CITIES[0],
   offers: [],
   offersStatus: RequestStatus.Idle,
+  requestId: null,
 };
 
 export const offers = createReducer(initialState, (builder) => {
@@ -25,15 +27,24 @@ export const offers = createReducer(initialState, (builder) => {
     .addCase(changeCity, (state, action) => {
       state.city = action.payload;
     })
-    .addCase(fetchOffersAction.pending, (state) => {
+    .addCase(fetchOffersAction.pending, (state, action) => {
       state.offersStatus = RequestStatus.Loading;
+      state.requestId = action.meta.requestId;
     })
     .addCase(fetchOffersAction.fulfilled, (state, action) => {
+      if (state.requestId !== action.meta.requestId) {
+        return;
+      }
+
       state.offers = action.payload;
       state.offersStatus = RequestStatus.Success;
+      state.requestId = null;
     })
-    .addCase(fetchOffersAction.rejected, (state) => {
-      state.offersStatus = RequestStatus.Error;
+    .addCase(fetchOffersAction.rejected, (state, action) => {
+      if (state.requestId === action.meta.requestId) {
+        state.offersStatus = RequestStatus.Error;
+        state.requestId = null;
+      }
     });
 });
 
