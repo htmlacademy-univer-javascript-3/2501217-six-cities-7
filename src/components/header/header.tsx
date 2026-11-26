@@ -1,21 +1,23 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { AppRoute, AuthorizationStatus } from '@/const';
 import { useAppDispatch, useAppSelector } from '@/hooks/use-store';
 import { logoutAction } from '@/store/api-actions';
-import { getAuthError, getAuthorizationStatus, getFavoriteOffers, getIsLogoutLoading, getUser } from '@/store/selectors';
+import { getAuthError, getAuthorizationStatus, getFavoriteOfferCount, getFavoriteUpdateError, getIsLogoutLoading, getUser } from '@/store/selectors';
 
 interface HeaderProps {
   hideNavigation?: boolean;
 }
 
-export const Header = ({ hideNavigation = false }: HeaderProps) => {
+const HeaderView = ({ hideNavigation = false }: HeaderProps) => {
   const dispatch = useAppDispatch();
   const authorizationStatus = useAppSelector(getAuthorizationStatus);
   const user = useAppSelector(getUser);
-  const favorites = useAppSelector(getFavoriteOffers);
+  const favoriteCount = useAppSelector(getFavoriteOfferCount);
   const isLogoutLoading = useAppSelector(getIsLogoutLoading);
   const error = useAppSelector(getAuthError);
+  const favoriteError = useAppSelector(getFavoriteUpdateError);
   const isAuthorized = authorizationStatus === AuthorizationStatus.Auth && user !== null;
 
   const handleSignOutClick = () => {
@@ -42,7 +44,7 @@ export const Header = ({ hideNavigation = false }: HeaderProps) => {
                           <img className="user__avatar" src={user.avatarUrl} alt="" width="20" height="20" />
                         </div>
                         <span className="header__user-name user__name">{user.email}</span>
-                        <span className="header__favorite-count">{favorites.length}</span>
+                        <span className="header__favorite-count">{favoriteCount}</span>
                       </Link>
                     </li>
                     <li className="header__nav-item">
@@ -64,7 +66,10 @@ export const Header = ({ hideNavigation = false }: HeaderProps) => {
           )}
         </div>
         {isAuthorized && error && <p role="alert">{error}</p>}
+        {isAuthorized && favoriteError && <p role="alert">{favoriteError}</p>}
       </div>
     </header>
   );
 };
+
+export const Header = memo(HeaderView);

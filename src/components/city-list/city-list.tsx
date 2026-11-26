@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import type { City } from '@/types/offer';
 import './city-list.css';
 
@@ -7,7 +9,7 @@ interface CityListProps {
   onCityChange: (city: City['name']) => void;
 }
 
-export const CityList = ({ cities, currentCity, onCityChange }: CityListProps) => (
+const CityListView = ({ cities, currentCity, onCityChange }: CityListProps) => (
   <ul className="locations__list tabs__list">
     {cities.map((city) => (
       <li className="locations__item" key={city}>
@@ -23,3 +25,5 @@ export const CityList = ({ cities, currentCity, onCityChange }: CityListProps) =
     ))}
   </ul>
 );
+
+export const CityList = memo(CityListView);

@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import { PlaceCard } from '@/components/place-card/place-card';
 import type { Offer } from '@/types/offer';
 
@@ -9,7 +11,7 @@ interface OfferListProps {
   onActiveOfferChange?: (offerId: Offer['id'] | null) => void;
 }
 
-export const OfferList = ({ offers, className = 'places__list', cardClassName = 'cities__card ', imageWrapperClassName, onActiveOfferChange }: OfferListProps) => (
+const OfferListView = ({ offers, className = 'places__list', cardClassName = 'cities__card ', imageWrapperClassName, onActiveOfferChange }: OfferListProps) => (
   <div className={className}>
     {offers.map((offer) => (
       <PlaceCard
@@ -17,9 +19,10 @@ export const OfferList = ({ offers, className = 'places__list', cardClassName = 
         offer={offer}
         className={cardClassName}
         imageWrapperClassName={imageWrapperClassName}
-        onMouseEnter={onActiveOfferChange}
-        onMouseLeave={() => onActiveOfferChange?.(null)}
+        onActiveOfferChange={onActiveOfferChange}
       />
     ))}
   </div>
 );
+
+export const OfferList = memo(OfferListView);

@@ -14,9 +14,15 @@ export enum AuthorizationStatus {
 
 export const APIRoute = {
   Offers: '/offers',
+  Favorite: '/favorite',
   Login: '/login',
   Logout: '/logout',
   Comments: '/comments',
+} as const;
+
+export const FavoriteStatus = {
+  Remove: 0,
+  Add: 1,
 } as const;
 
 export const RequestStatus = {
